@@ -1,0 +1,32 @@
+version: '3'
+
+networks:
+  my-net:
+
+services:
+  mongo-database:
+    image: "mongo:latest"
+    ports:
+      - 27017:27017
+    volumes:
+      - ./mongo_data:/data/db
+    networks:
+      - my-net
+  redis-database:
+    image: "redis"
+    ports:
+      - 6379:6379
+    networks:
+    - my-net
+  web:
+    build: .
+    ports:
+      - 1234:1234
+    environment:
+      - MONGO_URL=mongodb://mongo-database:27017/prak-tcc
+      - REDIS_URL=redis://redis-database:6379
+    depends_on:
+      - mongo-database
+      - redis-database
+    networks:
+      - my-net
